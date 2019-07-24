@@ -50,7 +50,7 @@ export default class WeatherProject extends React.Component {
                 <Forecast
                     main={this.state.forecast.main}
                     description={this.state.forecast.description}
-                    temp={Math.floor(this.state.forecast.temp - 273.15)}
+                    temp={Math.floor(this.state.forecast.temp - 273.150)}
                 />
             );
         }
