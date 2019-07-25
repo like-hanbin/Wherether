@@ -1,6 +1,7 @@
-import {View,Text,StyleSheet,TextInput} from 'react-native'
+import {View,Text,StyleSheet,ActivityIndicator} from 'react-native'
 import React from 'react'
 import Forecast from './Forecast'
+import { LinearGradient } from 'expo';
 
 const API_KEY = 'e66dc77c071cebd201015bf765409636'
 
@@ -14,9 +15,7 @@ export default class WeatherProject extends React.Component {
     componentDidMount() {
         navigator.geolocation.getCurrentPosition(
             position => {
-                this._getWeather(position.coords.latitude, position.coords.longitude).then(()=>{
-                    this.setState({isLoaded: true});
-                });
+                this._getWeather(position.coords.latitude, position.coords.longitude)
             },
             error => {
                 this.setState({error: error})
@@ -28,12 +27,10 @@ export default class WeatherProject extends React.Component {
         fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=${API_KEY}`)
             .then(Response => Response.json())
             .then(json =>{
-                ResponseJSON = {
-                    main: json.weather[0].main,
-                    description: json.weather[0].description,
-                    temp: json.main.temp
-                };
-                this.setState({forecast: ResponseJSON})
+                this.setState({
+                    forecast: json,
+                    isLoaded: true
+                });
             })
     }
 
@@ -47,20 +44,15 @@ export default class WeatherProject extends React.Component {
 
         if(this.state.forecast != null) {
             content = (
-                <Forecast
-                    main={this.state.forecast.main}
-                    description={this.state.forecast.description}
-                    temp={Math.floor(this.state.forecast.temp - 273.15)}
-                />
+                <Forecast data={this.state.forecast}/>
             );
         }
 
         return (
             <View style={styles.container}>
-                <View>
-                    <Text style={content? styles.hide : styles.show}>ㅋㅋㅋㅋㅋㅋㅋㅋ</Text>
-                </View>
-                {content}
+            { 
+                isLoaded ?  content : <ActivityIndicator color="#0000ff"/> 
+            }
             </View>
         );
     }
